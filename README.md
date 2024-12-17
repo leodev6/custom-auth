@@ -201,7 +201,7 @@ Route::middleware('admin')->group(function () {
 ### Connexion
 1. Accéder à `/login`.
 2. Saisir l'**email** et le **mot de passe**.
-3. Une fois connecté, accéder au tableau de bord.
+3. Une fois connecté, accéder au tableau de bord utilisateur ou admin en fonction des information de connexion saisi.
 
 ### Déconnexion
 1. Utiliser l'option "Déconnexion" pour terminer la session en toute sécurité.
