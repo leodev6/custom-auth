@@ -1,66 +1,240 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚀 Système d'Authentification Laravel Personnalisé avec deux utilisateur (user et admin)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Un système d'authentification construit sur Laravel, sans recourir aux packages d'authentification intégrés. Idéal pour un apprentissage approfondi ou pour des projets nécessitant des solutions personnalisées.
 
-## About Laravel
+## 📖 Table des Matières
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- [Fonctionnalités](#✨-fonctionnalités)
+- [Prérequis](#🔧-prérequis)
+- [Installation](#📥-installation)
+- [Structure du Projet](#🏗-structure-du-projet)
+- [Points Essentiels](#🎯-points-essentiels)
+- [Guide d'Utilisation](#👨‍💻-guide-dutilisation)
+- [Personnalisation du Style](#🎨-personnalisation-du-style)
+- [Cycle de Session](#🔄-cycle-de-session)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## ✨ Fonctionnalités
 
-## Learning Laravel
+- **Inscription et Connexion** : Gestion des utilisateurs avec un système sécurisé.
+- **Sessions** : Connexion persistante avec gestion sécurisée des sessions.
+- **Protection des Routes** : Middleware personnalisé pour protéger les ressources.
+- **Validation Avancée** : Données utilisateur soigneusement validées.
+- **Interface Utilisateur Moderne** : Design responsive, clair et intuitif.
+- **Gestion des Erreurs** : Feedback utilisateur détaillé et adapté.
+- **Déconnexion Sécurisée** : Terminer une session en toute sécurité.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 🔧 Prérequis
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **PHP** : Version >= 8.0
+- **Laravel** : Version >= 9.0
+- **MySQL** : Version >= 5.7
+- **Composer** : Pour la gestion des dépendances PHP
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## 📥 Installation
 
-### Premium Partners
+1. **Cloner le projet** :
+   ```bash
+   git clone [url-du-projet]
+   cd [nom-du-dossier]
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+2. **Installer les dépendances** :
+   ```bash
+   composer install
+   ```
 
-## Contributing
+3. **Configurer l’environnement** :
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+4. **Configurer la base de données** dans le fichier `.env` :
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=custom_auth
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
 
-## Code of Conduct
+5. **Configurer la base de données** (création d'un admin par defaut ) `AdminSeeder.php` :
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```php
+public function run()
+    {
+        User::updateOrCreate(
+            ['email' => 'admin@example.com'], // Évite les doublons si le seeder est exécuté plusieurs fois
+            [
+                'name' => 'Admin',
+                'password' => Hash::make('admin'), // Utiliser un mot de passe sécurisé en production
+                'role' => 'admin', // Rôle administrateur
+            ]
+        );
+    }
+```
 
-## Security Vulnerabilities
+6. **Activer l'AdminSeeder.php** dans le fichier  `DatabaseSeeder.php` :
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```php
+public function run()
+    {
+        $this->call(AdminSeeder::class);
+    }
+```
 
-## License
+7. **Exécuter les migrations** :
+   ```bash
+   php artisan migrate
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+8. **Lancer le serveur local** :
+   ```bash
+   php artisan serve
+   ```
+
+---
+
+## 🏗 Structure du Projet
+
+### 📂 Models
+- **`User.php`** : Modèle utilisateur avec gestion des attributs et relations nécessaires.
+
+### 📂 Controllers
+- **`AuthController.php`** :
+  - Inscription
+  - Connexion
+  - Déconnexion
+
+### 📂 Middleware
+- **`AdminMiddleware.php`** : Vérifie les sessions actives pour protéger les routes administrateur.
+- **`UserMiddleware.php`** : Vérifie les sessions actives pour protéger les routes Utilisateur.
+
+### 📂 Migrations
+- **`create_users_table.php`** :
+  - `name`
+  - `email` (unique)
+  - `password`
+  - `role`
+  - `timestamps`
+
+### 📂 Views
+- **`auth/login.blade.php`** : Page de connexion.
+- **`auth/register.blade.php`** : Page d’inscription.
+- **`admin/dashboard.blade.php`** : Tableau de bord utilisateur admin.
+- **`user/dashboard.blade.php`** : Tableau de bord utilisateur.
+
+### 📂 Routes
+```php
+// Routes publiques
+Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+// Routes protégées
+
+// Tableau de bord utilisateur
+Route::middleware('user')->group(function () {
+    Route::get('/user/dashboard', function () {
+        return view('user.dashboard');
+    })->name('user.dashboard');
+});
+
+// Tableau de bord admin
+Route::middleware('admin')->group(function () {
+    Route::get('/admin/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
+});
+```
+
+---
+
+## 🎯 Points Essentiels
+
+### Sécurité
+- Hashage des mots de passe avec **Bcrypt**.
+- Protection CSRF sur tous les formulaires.
+- Validation stricte des données utilisateur.
+- Middleware pour garantir des sessions sécurisées.
+
+### Interface Utilisateur
+- Design responsive et moderne.
+- Feedback utilisateur clair et interactif.
+- Navigation intuitive avec animations fluides.
+
+### Validation des Données
+#### Exemple : Inscription
+```php
+'name' => 'required|string|max:255',
+'email' => 'required|string|email|max:255|unique:users',
+'password' => 'required|string|min:8|confirmed',
+```
+#### Exemple : Connexion
+```php
+'email' => 'required|string|email|max:255|unique:users'
+'password' => 'required|string',
+```
+
+---
+
+## 👨‍💻 Guide d’Utilisation
+
+### Inscription
+1. Accéder à `/register`.
+2. Remplir le formulaire avec :
+   - Nom d’utilisateur (unique)
+   - Email
+   - Mot de passe (et confirmation)
+3. Soumettre le formulaire pour être redirigé vers le tableau de bord.
+
+### Connexion
+1. Accéder à `/login`.
+2. Saisir l'**email** et le **mot de passe**.
+3. Une fois connecté, accéder au tableau de bord.
+
+### Déconnexion
+1. Utiliser l'option "Déconnexion" pour terminer la session en toute sécurité.
+
+---
+
+## 🎨 Personnalisation du Style
+
+Le projet utilise une approche design moderne avec :
+- **Palette de couleurs** : cohérente et attrayante.
+- **Typographie** : lisible et professionnelle.
+- **Espacement** : harmonieux pour un affichage clair.
+- **Feedback visuel** : transitions et animations subtiles.
+- **Formulaires** : adaptatifs et responsifs.
+
+---
+
+## 🔄 Cycle de Session
+
+1. **Création lors de la connexion/inscription** :
+   ```php
+   Session::put('user_id', $user->id);
+   ```
+
+2. **Vérification dans le middleware** :
+   ```php
+   if (!Session::has('user_id')) {
+       return redirect('/login');
+   }
+   ```
+
+3. **Suppression lors de la déconnexion** :
+   ```php
+   Session::forget('user_id');
+   ```
+
